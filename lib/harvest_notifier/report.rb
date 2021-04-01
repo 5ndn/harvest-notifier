@@ -5,7 +5,7 @@ require "active_support/core_ext/hash/keys"
 
 module HarvestNotifier
   class Report
-    attr_reader :harvest, :slack, :harvest_users, :slack_users, :emails_whitelist, :missing_hours_threshold
+    attr_reader :harvest, :slack, :harvest_users, :slack_users, :emails_whitelist, :missing_hours_threshold, :missing_hours_daily_threshold
 
     def initialize(harvest, slack)
       @harvest = harvest
@@ -16,6 +16,7 @@ module HarvestNotifier
 
       @emails_whitelist = ENV.fetch("EMAILS_WHITELIST", "").split(",").map(&:strip)
       @missing_hours_threshold = ENV.fetch("MISSING_HOURS_THRESHOLD", 1.0).to_f
+      @missing_hours_daily_threshold = ENV.fetch("MISSING_HOURS_DAILY_THRESHOLD", 1.0).to_f
     end
 
     def daily(date = Date.yesterday)
@@ -23,7 +24,16 @@ module HarvestNotifier
       users = with_slack(with_reports(report))
 
       filter(users) do |user|
-        not_notifiable?(user) || time_reported?(user)
+        not_notifiable?(user) || full_time_daily_reported?(user)
+      end
+    end
+
+    def monday(date = prior_friday(Date.today))
+      report = harvest.time_report_list(date)
+      users = with_slack(with_reports(report))
+
+      filter(users) do |user|
+        not_notifiable?(user) || full_time_daily_reported?(user)
       end
     end
 
@@ -34,6 +44,11 @@ module HarvestNotifier
       filter(users) do |user|
         not_notifiable?(user) || full_time_reported?(user)
       end
+    end
+
+    def prior_friday(date)
+      days_before = (date.wday + 1) % 7 + 1
+      date.to_date - days_before
     end
 
     private
@@ -51,12 +66,16 @@ module HarvestNotifier
     def harvest_user(user)
       hours = user["weekly_capacity"].to_f / 3600
       full_name = user.values_at("first_name", "last_name").join(" ")
+      email = user["email"].downcase
 
-      user.slice("email", "is_contractor", "is_active").merge(
+
+      user.slice("is_contractor", "is_active").merge(
         {
+          "email" => email,
           "full_name" => full_name,
           "weekly_capacity" => hours,
           "missing_hours" => hours,
+          "missing_hours_daily" => 8,
           "total_hours" => 0
         }
       )
@@ -64,7 +83,7 @@ module HarvestNotifier
 
     def prepare_slack_users(users)
       users["members"]
-        .group_by { |u| u["profile"]["email"] }
+        .group_by { |u| u["profile"]["email"].present? ? u["profile"]["email"].downcase : u["profile"]["email"] }
         .transform_values(&:first)
     end
 
@@ -75,6 +94,7 @@ module HarvestNotifier
         reported_hours = report["total_hours"].to_f
 
         if users[id].present?
+          users[id]["missing_hours_daily"] -= reported_hours
           users[id]["missing_hours"] -= reported_hours
           users[id]["total_hours"] += reported_hours
         end
@@ -108,12 +128,20 @@ module HarvestNotifier
       user["total_hours"].positive?
     end
 
+    def full_time_daily_reported?(user)
+      time_reported(user) && missing_hours_daily_insignificant?(user)
+    end
+
     def full_time_reported?(user)
       time_reported?(user) && missing_hours_insignificant?(user)
     end
 
     def without_weekly_capacity?(user)
       user["weekly_capacity"].zero?
+    end
+
+    def missing_hours_daily_insignificant?(user)
+      user["missing_hours_daily"] <= missing_hours_daily_threshold
     end
 
     def missing_hours_insignificant?(user)

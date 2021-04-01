@@ -10,9 +10,11 @@ Notification is determined from Harvest API V2.
 
 ## Features
 
-There are 2 types of reports: Daily and Weekly.
+There are 3 types of reports: Daily, Monday, and Weekly.
 
 - Daily Report is generated on weekdays (except Monday) and shows those users who did not fill in their time for that day.
+
+- Monday Report is generated on Mondays and shows info about the past Friday.
 
 - Weekly Report is generated every Monday and shows those users who still need to report the required working hours for last week.
 
@@ -40,7 +42,7 @@ This integration allows to:
       ```
   * Add app to Slack channel.
 
-2. [Deploy to Heroku](https://heroku.com/deploy?template=https://github.com/fs/harvest-notifier)
+2. [Deploy to Heroku](https://heroku.com/deploy?template=https://github.com/carwin/harvest-notifier)
 
 3. Configure following ENV variables
     ```bash
@@ -52,13 +54,16 @@ This integration allows to:
     # EMAILS_WHITELIST is a variable that lists emails separated by commas, which don't need to be notified in Slack.
     # For example, administrators or managers.
     heroku config:set MISSING_HOURS_THRESHOLD=1.0
+    heroku config:set MISSING_HOURS_DAILY_THRESHOLD=1.0
     # MISSING_HOURS_THRESHOLD is a variable that indicates the minimum threshold of hours at which the employee will not be notified in Slack.
     # For example, 2.5 or 4. The default threshold is 1 hour. Leave empty if satisfied with the default value.
+    heroku config:set TZ=America/New_York
     ```
 
 4. Add job in Heroku Scheduler
 
   * ```bin/rake reports:daily``` for daily report
+  * ```bin/rake reports:monday``` for monday report
   * ```bin/rake reports:weekly``` for weekly report
 
 
@@ -75,7 +80,7 @@ This integration allows to:
 
 1. Сlone repo
 ```bash
-git clone git@github.com:fs/harvest-notifier.git
+git clone git@github.com:carwin/harvest-notifier.git
 cd harvest-notifier
 ```
 
@@ -90,6 +95,10 @@ bin/build
 ```
 
 ## Credits
+
+This project is a fork from the original Flatstack project with borrowed code from [Be Intelligent Ltd](https://github.com/beintelligent)'s Monday report modifications.
+
+### Original Credits
 
 It was written by [Flatstack](http://www.flatstack.com) with the help of our
 [contributors](http://github.com/fs/ruby-base/contributors).

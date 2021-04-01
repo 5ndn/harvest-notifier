@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 require "harvest_notifier/templates/base"
@@ -5,11 +6,12 @@ require "harvest_notifier/templates/base"
 module HarvestNotifier
   module Templates
     class DailyReport < Base
-      REMINDER_TEXT = "*Guys, don't forget to report the working hours in Harvest every day.*"
+      REMINDER_TEXT = "*Team, don't forget to report the working hours in Harvest every day.*"
       USERS_LIST_TEXT = "Here is a list of people who didn't report the working hours for *%<current_date>s*:"
-      REPORT_NOTICE_TEXT = "_Please, report time and react with :heavy_check_mark: for this message._"
+      REPORT_NOTICE_TEXT = "_Please, report time and click the Refresh button to update the report._"
       SLACK_ID_ITEM = "• <@%<slack_id>s>"
       FULL_NAME_ITEM = "• %<full_name>s"
+      TOTAL_HOURS = " - %<total_hours>shrs"
 
       def generate # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         Jbuilder.encode do |json| # rubocop:disable Metrics/BlockLength
@@ -82,7 +84,7 @@ module HarvestNotifier
       private
 
       def formatted_date
-        assigns[:date].strftime("%B%eth")
+        assigns[:date].strftime("%B %eth")
       end
 
       def refresh_value
@@ -91,7 +93,7 @@ module HarvestNotifier
 
       def users_list
         assigns[:users]
-          .map { |u| u[:slack_id].present? ? format(SLACK_ID_ITEM, u) : format(FULL_NAME_ITEM, u) }
+          .map { |u| u[:slack_id].present? ? format(SLACK_ID_ITEM, u) + format(TOTAL_HOURS, u) : format(FULL_NAME_ITEM, u) + format(TOTAL_HOURS, u) }
           .join("\n")
       end
     end

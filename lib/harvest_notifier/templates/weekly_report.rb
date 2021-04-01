@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 require "harvest_notifier/templates/base"
@@ -5,9 +6,9 @@ require "harvest_notifier/templates/base"
 module HarvestNotifier
   module Templates
     class WeeklyReport < Base
-      REMINDER_TEXT = "*Guys, don't forget to report the working hours in Harvest every day.*"
+      REMINDER_TEXT = "*Team, don't forget to report the working hours in Harvest every day.*"
       USERS_LIST_TEXT = "Here is a list of people who didn't report the working hours for the last week: *%<period>s*"
-      REPORT_NOTICE_TEXT = "_Please, report time and react with :heavy_check_mark: for this message._"
+      REPORT_NOTICE_TEXT = "_Please, report time and click the Refresh button to update the report._"
       SLACK_ID_ITEM = "• <@%<slack_id>s>: *%<missing_hours>s* hours of %<weekly_capacity>s"
       FULL_NAME_ITEM = "• %<full_name>s: *%<missing_hours>s* hours of %<weekly_capacity>s"
 

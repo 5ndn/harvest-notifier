@@ -13,7 +13,13 @@ module HarvestNotifier
   def create_daily_report
     return unless DAILY_REPORT.include?(Date.today.strftime("%A"))
 
-    HarvestNotifier::Base.new.create_daily_report(Date.yesterday)
+    HarvestNotifier::Base.new.create_daily_report(Date.today)
+  end
+
+  def create_monday_report
+    return unless Date.today.monday?
+
+    HarvestNotifier::Base.new.create_monday_report()
   end
 
   def create_weekly_report
