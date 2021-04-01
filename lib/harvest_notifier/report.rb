@@ -129,7 +129,7 @@ module HarvestNotifier
     end
 
     def full_time_daily_reported?(user)
-      time_reported(user) && missing_hours_daily_insignificant?(user)
+      time_reported?(user) && missing_hours_daily_insignificant?(user)
     end
 
     def full_time_reported?(user)
