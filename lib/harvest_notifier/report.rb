@@ -19,7 +19,7 @@ module HarvestNotifier
       @missing_hours_daily_threshold = ENV.fetch("MISSING_HOURS_DAILY_THRESHOLD", 1.0).to_f
     end
 
-    def daily(date = Date.yesterday)
+    def daily(date = Date.today)
       report = harvest.time_report_list(date)
       users = with_slack(with_reports(report))
 
