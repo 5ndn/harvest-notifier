@@ -85,7 +85,7 @@ module HarvestNotifier
       private
 
       def formatted_period
-        "#{assigns[:date_from].strftime('%d %b')} - #{assigns[:date_to].strftime('%d %b %Y')}"
+        "#{assigns[:date_from].strftime('%b %d')} - #{assigns[:date_to].strftime('%b %d')}"
       end
 
       def users_list
