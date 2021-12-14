@@ -23,8 +23,7 @@ module HarvestNotifier
   end
 
   def create_weekly_report
-    #return unless Date.today.wednesday?
-    return unless Date.today.tuesday?
+    return unless Date.today.wednesday?
 
     #date_from = Date.today.last_week
     #date_to = date_from + 4
