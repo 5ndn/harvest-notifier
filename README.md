@@ -1,7 +1,7 @@
 # Slack Reminder
 
 [![Build Status](https://flatstack.semaphoreci.com/badges/harvest-notifier.svg)](https://flatstack.semaphoreci.com/projects/harvest-notifier)
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/carwin/harvest-notifier)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/5ndn/harvest-notifier)
 
 Slack Reminder is an integration between Harvest and Slack which automatically reminds users who forget to mark their working hours in Harvest.
 
@@ -42,7 +42,7 @@ This integration allows to:
       ```
   * Add app to Slack channel.
 
-2. [Deploy to Heroku](https://heroku.com/deploy?template=https://github.com/carwin/harvest-notifier)
+2. [Deploy to Heroku](https://heroku.com/deploy?template=https://github.com/5ndn/harvest-notifier)
 
 3. Configure following ENV variables
     ```bash
